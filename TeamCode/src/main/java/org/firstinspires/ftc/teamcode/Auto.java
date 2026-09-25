@@ -39,7 +39,7 @@ public class Auto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        // Step 1: Drive forward at 50% power
+        // Step 1: Drive forward at 50% pwr
         leftFront.setPower(0.5);
         leftBack.setPower(0.5);
         rightFront.setPower(0.5);
