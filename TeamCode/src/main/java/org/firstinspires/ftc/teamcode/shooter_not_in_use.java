@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @TeleOp(name="DECODE Shooter PIDF Test", group="TeleOp")
-public class Shooter extends LinearOpMode {
+public class shooter_not_in_use extends LinearOpMode {
 
     private DcMotorEx shooterMotor;
-    private FlywheelController pidfController;
+    private FlywheelController_not_in_use pidfController;
 
     // Start tuning with kF first, keeping others at 0.0
     public static double P = 0.005;
@@ -23,7 +23,7 @@ public class Shooter extends LinearOpMode {
         // Ensure motor runs without internal SDK constraints interfering with our PIDF calculations
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        pidfController = new FlywheelController(P, I, D, F);
+        pidfController = new FlywheelController_not_in_use(P, I, D, F);
 
         waitForStart();
 

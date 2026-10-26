@@ -42,22 +42,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
                 String selected = "None";
 
                 if (gamepad1.a) {
-                    motor0.setPower(0.3);
+                    motor0.setPower(1.0);
                     selected = "Motor 0";
                 }
 
                 if (gamepad1.b) {
-                    motor1.setPower(0.3);
+                    motor1.setPower(1.0);
                     selected = "Motor 1";
                 }
 
                 if (gamepad1.x) {
-                    motor2.setPower(0.3);
+                    motor2.setPower(1.0);
                     selected = "Motor 2";
                 }
 
                 if (gamepad1.y) {
-                    motor3.setPower(0.3);
+                    motor3.setPower(1.0);
                     selected = "Motor 3";
                 }
 

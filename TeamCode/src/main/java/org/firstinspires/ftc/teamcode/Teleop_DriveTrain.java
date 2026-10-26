@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
     @TeleOp
-    public class DriveTrain extends LinearOpMode {
+    public class Teleop_DriveTrain extends LinearOpMode {
         @Override
         public void runOpMode() throws InterruptedException {
             // Declare our motors

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class FlywheelController {
+public class FlywheelController_not_in_use {
     // PIDF Coefficients (To be tuned)
     private double kP, kI, kD, kF;
 
@@ -12,7 +12,7 @@ public class FlywheelController {
 
     private ElapsedTime timer = new ElapsedTime();
 
-    public FlywheelController(double kP, double kI, double kD, double kF) {
+    public FlywheelController_not_in_use(double kP, double kI, double kD, double kF) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;

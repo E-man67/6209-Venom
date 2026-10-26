@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Mecanum Park Auto", group="Autonomous")
-public class Auto extends LinearOpMode {
+public class Auto_Park extends LinearOpMode {
 
     // Declare the 4 Mecanum motors
     private DcMotor leftFront = null;
