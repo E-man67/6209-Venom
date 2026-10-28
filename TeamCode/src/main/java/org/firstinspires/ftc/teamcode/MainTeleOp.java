@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name="Official Robot TeleOp", group="Linear Opmode")
 public class MainTeleOp extends LinearOpMode {
 
-    // Declare instance variables for our custom subsystem classes
     private Drivetrain drivetrain;
     private Transfer transfer;
     private Shooter shooter;
@@ -18,7 +17,7 @@ public class MainTeleOp extends LinearOpMode {
         transfer = new Transfer(hardwareMap);
         shooter = new Shooter(hardwareMap);
 
-        telemetry.addData("Status", "Initialized. Waiting for Start...");
+        telemetry.addData("Status", "Initialized 8 Total Motors (4 Drive, 4 Expansion)");
         telemetry.update();
 
         waitForStart();
@@ -26,11 +25,11 @@ public class MainTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             // ==================== DRIVETRAIN CONTROLS (Gamepad 1) ====================
-            // Gamepad joysticks are inverted vertically by default, so we reverse Y values
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
 
+            // Calls the robot-centric method inside your corrected Game Manual 0 drivetrain class
             drivetrain.driveRobotCentric(drive, strafe, turn);
 
             // ==================== TRANSFER CONTROLS (Gamepad 2) ====================
@@ -51,15 +50,16 @@ public class MainTeleOp extends LinearOpMode {
 
             // ==================== SHOOTER CONTROLS (Gamepad 2) ====================
             if (gamepad2.x) {
-                shooter.runShooter(1.0);  // Fire at maximum speed
+                shooter.runShooter(1.0);  // Power up both flywheel motors to max speed
             } else if (gamepad2.y) {
-                shooter.runShooter(0.0);  // Power down launcher wheels
+                shooter.runShooter(0.0);  // Spin down both flywheels safely
             }
 
-            // ==================== OPERATOR TELEMETRY ====================
-            telemetry.addData("Drive Power Vector", "Y: %.2f | X: %.2f | R: %.2f", drive, strafe, turn);
-            telemetry.addData("Shooter Status", gamepad2.x ? "ACTIVE (LAUNCH)" : "IDLE");
+            // ==================== TELEMETRY FEEDBACK ====================
+            telemetry.addData("Drive Active", "Y: %.2f | X: %.2f", drive, strafe);
+            telemetry.addData("Shooter Status", gamepad2.x ? "SPINNING UP" : "IDLE");
             telemetry.update();
         }
     }
 }
+

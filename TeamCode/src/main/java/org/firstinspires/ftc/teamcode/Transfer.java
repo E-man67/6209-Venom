@@ -20,12 +20,9 @@ public class Transfer {
 
     /**
      * Controls intake and internal conveyor states simultaneously.
-     * @param intakePower   Power applied to the intake spinner
-     * @param conveyorPower Power applied to the internal conveyor channel
      */
     public void runTransfer(double intakePower, double conveyorPower) {
         intakeMotor.setPower(intakePower);
         conveyorMotor.setPower(conveyorPower);
     }
 }
-
