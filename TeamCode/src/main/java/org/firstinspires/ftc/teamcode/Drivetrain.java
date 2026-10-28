@@ -37,18 +37,10 @@ public class Drivetrain extends LinearOpMode {
      */
     private void initializeHardware(HardwareMap hwMap) {
         // Fallback checks handle profile name variances automatically
-        try {
-            frontLeftMotor  = hwMap.dcMotor.get("frontLeftMotor");
-            frontRightMotor = hwMap.dcMotor.get("frontRightMotor");
-            backLeftMotor   = hwMap.dcMotor.get("backLeftMotor");
-            backRightMotor  = hwMap.dcMotor.get("backRightMotor");
-        } catch (Exception e) {
-            // Safe fallback if names match your original layout profile mapping
-            frontLeftMotor  = hwMap.dcMotor.get("left_front");
-            frontRightMotor = hwMap.dcMotor.get("right_front");
-            backLeftMotor   = hwMap.dcMotor.get("left_back");
-            backRightMotor  = hwMap.dcMotor.get("right_back");
-        }
+        frontLeftMotor  = hwMap.dcMotor.get("frontLeftMotor");
+        frontRightMotor = hwMap.dcMotor.get("frontRightMotor");
+        backLeftMotor   = hwMap.dcMotor.get("backLeftMotor");
+        backRightMotor  = hwMap.dcMotor.get("backRightMotor");
 
         // Reversing the right side motors per standard Game Manual 0 geometry mapping
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
