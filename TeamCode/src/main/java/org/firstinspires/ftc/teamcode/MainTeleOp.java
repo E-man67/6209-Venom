@@ -1,3 +1,5 @@
+
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -18,11 +20,13 @@ public class MainTeleOp extends LinearOpMode {
         shooter = new Shooter(hardwareMap);
 
         telemetry.addData("Status", "Initialized 8 Total Motors (4 Drive, 4 Expansion)");
+        telemetry.addData("Pinpoint", drivetrain.hasPinpoint() ? "found" : "NOT FOUND");
         telemetry.update();
 
         waitForStart();
 
         while (opModeIsActive()) {
+            drivetrain.update();
 
             // ==================== DRIVETRAIN CONTROLS (Gamepad 1) ====================
             double drive = -gamepad1.left_stick_y;
@@ -57,7 +61,11 @@ public class MainTeleOp extends LinearOpMode {
 
             // ==================== TELEMETRY FEEDBACK ====================
             telemetry.addData("Drive Active", "Y: %.2f | X: %.2f", drive, strafe);
-            telemetry.addData("Shooter Status", gamepad2.x ? "SPINNING UP" : "IDLE");
+            telemetry.addData("Shooter Status", shooter.isRunning() ? "SPINNING" : "IDLE");
+            telemetry.addData("Shooter Velocity (ticks/s)", "L: %.0f | R: %.0f",
+                    shooter.getLeftVelocity(), shooter.getRightVelocity());
+            telemetry.addData("Position (in)", "X: %.1f | Y: %.1f | Heading: %.1f",
+                    drivetrain.getX(), drivetrain.getY(), Math.toDegrees(drivetrain.getHeading()));
             telemetry.update();
         }
     }
