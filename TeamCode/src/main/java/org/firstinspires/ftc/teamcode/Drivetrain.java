@@ -1,87 +1,122 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="Drivetrain Standalone Control", group="Testing")
-public class Drivetrain extends LinearOpMode {
+/**
+ * Mecanum drivetrain subsystem (4 motors) plus the goBILDA Pinpoint odometry computer.
+ * This is a plain helper class, not an OpMode: MainTeleOp, Teleop_DriveTrain and
+ * Auto_Park all create one with {@code new Drivetrain(hardwareMap)}.
+ */
+public class Drivetrain {
 
-    private DcMotor frontLeftMotor;
-    private DcMotor backLeftMotor;
-    private DcMotor frontRightMotor;
-    private DcMotor backRightMotor;
-    private IMU imu;
+    // Pinpoint pod offsets from the robot's center of rotation, in millimeters.
+    // X offset: how far left (+) / right (-) the forward (X) pod is.
+    // Y offset: how far forward (+) / back (-) the strafe (Y) pod is.
+    // Measure these on the real robot / CAD; heading is accurate even if they are 0.
+    public static double PINPOINT_X_OFFSET_MM = 0.0;
+    public static double PINPOINT_Y_OFFSET_MM = 0.0;
 
-    /**
-     * Constructor used by MainTeleOp to initialize the chassis as a sub-mechanism.
-     */
-    public Drivetrain(HardwareMap hardwareMap) {
-        initializeHardware(hardwareMap);
-    }
+    private final DcMotor frontLeftMotor;
+    private final DcMotor backLeftMotor;
+    private final DcMotor frontRightMotor;
+    private final DcMotor backRightMotor;
+    private final IMU imu;
+    private final GoBildaPinpointDriver pinpoint; // null if not in the robot configuration
 
-    /**
-     * Empty constructor required by the FTC SDK to run this file directly as an independent OpMode.
-     */
-    public Drivetrain() {
-        // Kept empty intentionally
-    }
+    public Drivetrain(HardwareMap hwMap) {
+        frontLeftMotor  = hwMap.get(DcMotor.class, "frontLeftMotor");
+        frontRightMotor = hwMap.get(DcMotor.class, "frontRightMotor");
+        backLeftMotor   = hwMap.get(DcMotor.class, "backLeftMotor");
+        backRightMotor  = hwMap.get(DcMotor.class, "backRightMotor");
 
-    /**
-     * Unified hardware direction layout pulled straight from Game Manual 0.
-     */
-    private void initializeHardware(HardwareMap hwMap) {
-        // Fallback checks handle profile name variances automatically
-        frontLeftMotor  = hwMap.dcMotor.get("frontLeftMotor");
-        frontRightMotor = hwMap.dcMotor.get("frontRightMotor");
-        backLeftMotor   = hwMap.dcMotor.get("backLeftMotor");
-        backRightMotor  = hwMap.dcMotor.get("backRightMotor");
+        // Motor directions. With the right side REVERSED (the Game Manual 0 default) this robot
+        // spun in circles on forward stick, so both sides are FORWARD here.
+        // If it now drives backwards on forward stick, change all four to REVERSE.
+        // If just one wheel spins the wrong way, flip only that motor.
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // Reversing the right side motors per standard Game Manual 0 geometry mapping
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // Retrieve and initialize the IMU sensor for field-centric orientation tracking
-        imu = hwMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-        imu.initialize(parameters);
-    }
-
-    /**
-     * Robot-Centric Driving method required to maintain seamless compatibility with MainTeleOp.
-     * Maps perfectly to the mathematical constraints of the Game Manual 0 algorithm.
-     */
-    public void driveRobotCentric(double y, double x, double rx) {
-        // Compute standard holonomic scaling factors matching the pure math parameters
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
-
-        double frontLeftPower  = (y + x + rx) / denominator;
-        double backLeftPower   = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower  = (y + x - rx) / denominator;
-
-        frontLeftMotor.setPower(frontLeftPower);
-        backLeftMotor.setPower(backLeftPower);
-        frontRightMotor.setPower(frontRightPower);
-        backRightMotor.setPower(backRightPower);
-    }
-
-    /**
-     * Optional utility method if you ever want to leverage the IMU field-centric code inside MainTeleOp.
-     */
-    public void driveFieldCentric(double y, double x, double rx, boolean resetYaw) {
-        if (resetYaw) {
-            imu.resetYaw();
+        for (DcMotor motor : new DcMotor[]{frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor}) {
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        // Control Hub IMU, used for field-centric heading only if the Pinpoint is missing
+        imu = hwMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+
+        // goBILDA Pinpoint odometry computer (I2C device named "pinpoint")
+        pinpoint = hwMap.tryGet(GoBildaPinpointDriver.class, "pinpoint");
+        if (pinpoint != null) {
+            pinpoint.setOffsets(PINPOINT_X_OFFSET_MM, PINPOINT_Y_OFFSET_MM, DistanceUnit.MM);
+            pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+            // X should count up when driving forward, Y should count up when strafing left
+            pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+                    GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            pinpoint.resetPosAndIMU();
+        }
+    }
+
+    /** Must be called once per loop so odometry stays current. */
+    public void update() {
+        if (pinpoint != null) {
+            pinpoint.update();
+        }
+    }
+
+    public boolean hasPinpoint() {
+        return pinpoint != null;
+    }
+
+    /** Robot heading in radians, counter-clockwise positive. */
+    public double getHeading() {
+        if (pinpoint != null) {
+            return pinpoint.getHeading(AngleUnit.RADIANS);
+        }
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    }
+
+    public void resetHeading() {
+        if (pinpoint != null) {
+            pinpoint.setHeading(0, AngleUnit.RADIANS);
+        }
+        imu.resetYaw();
+    }
+
+    /** Distance driven forward since start, in inches (0 without a Pinpoint). */
+    public double getX() {
+        return pinpoint != null ? pinpoint.getPosX(DistanceUnit.INCH) : 0.0;
+    }
+
+    /** Distance strafed left since start, in inches (0 without a Pinpoint). */
+    public double getY() {
+        return pinpoint != null ? pinpoint.getPosY(DistanceUnit.INCH) : 0.0;
+    }
+
+    /** Robot-centric mecanum drive. y = forward, x = strafe right, rx = turn clockwise. */
+    public void driveRobotCentric(double y, double x, double rx) {
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
+
+        frontLeftMotor.setPower((y + x + rx) / denominator);
+        backLeftMotor.setPower((y - x + rx) / denominator);
+        frontRightMotor.setPower((y - x - rx) / denominator);
+        backRightMotor.setPower((y + x - rx) / denominator);
+    }
+
+    /** Field-centric mecanum drive using the Pinpoint (or IMU) heading. */
+    public void driveFieldCentric(double y, double x, double rx) {
+        double botHeading = getHeading();
 
         // Rotate the movement direction counter to the bot's rotation
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -89,38 +124,10 @@ public class Drivetrain extends LinearOpMode {
 
         rotX = rotX * 1.1;  // Counteract imperfect strafing
 
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1.0);
-
-        frontLeftMotor.setPower((rotY + rotX + rx) / denominator);
-        backLeftMotor.setPower((rotY - rotX + rx) / denominator);
-        frontRightMotor.setPower((rotY - rotX - rx) / denominator);
-        backRightMotor.setPower((rotY + rotX - rx) / denominator);
+        driveRobotCentric(rotY, rotX, rx);
     }
 
-    /**
-     * Execution loop that runs ONLY when you select this program directly on the Driver Hub.
-     */
-    @Override
-    public void runOpMode() throws InterruptedException {
-        initializeHardware(hardwareMap);
-
-        telemetry.addData("Status", "Standalone Game Manual 0 Drivetrain Ready!");
-        telemetry.update();
-
-        waitForStart();
-
-        if (isStopRequested()) return;
-
-        while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            // Run the pure Game Manual 0 Field Centric system loop directly
-            driveFieldCentric(y, x, rx, gamepad1.options);
-
-            telemetry.addData("Driving Mode", "Field Centric Active");
-            telemetry.update();
-        }
+    public void stop() {
+        driveRobotCentric(0, 0, 0);
     }
 }
