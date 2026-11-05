@@ -31,17 +31,17 @@ public class Drivetrain {
     private final GoBildaPinpointDriver pinpoint; // null if not in the robot configuration
 
     public Drivetrain(HardwareMap hwMap) {
-        frontLeftMotor  = hwMap.get(DcMotor.class, "frontLeftMotor");
-        frontRightMotor = hwMap.get(DcMotor.class, "frontRightMotor");
-        backLeftMotor   = hwMap.get(DcMotor.class, "backLeftMotor");
-        backRightMotor  = hwMap.get(DcMotor.class, "backRightMotor");
+        frontLeftMotor  = hwMap.get(DcMotor.class, "fl");
+        frontRightMotor = hwMap.get(DcMotor.class, "fr");
+        backLeftMotor   = hwMap.get(DcMotor.class, "bl");
+        backRightMotor  = hwMap.get(DcMotor.class, "br");
 
         // Motor directions. With the right side REVERSED (the Game Manual 0 default) this robot
         // spun in circles on forward stick, so both sides are FORWARD here.
         // If it now drives backwards on forward stick, change all four to REVERSE.
         // If just one wheel spins the wrong way, flip only that motor.
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -49,85 +49,3 @@ public class Drivetrain {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
-
-        // Control Hub IMU, used for field-centric heading only if the Pinpoint is missing
-        imu = hwMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-
-        // goBILDA Pinpoint odometry computer (I2C device named "pinpoint")
-        pinpoint = hwMap.tryGet(GoBildaPinpointDriver.class, "pinpoint");
-        if (pinpoint != null) {
-            pinpoint.setOffsets(PINPOINT_X_OFFSET_MM, PINPOINT_Y_OFFSET_MM, DistanceUnit.MM);
-            pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-            // X should count up when driving forward, Y should count up when strafing left
-            pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                    GoBildaPinpointDriver.EncoderDirection.FORWARD);
-            pinpoint.resetPosAndIMU();
-        }
-    }
-
-    /** Must be called once per loop so odometry stays current. */
-    public void update() {
-        if (pinpoint != null) {
-            pinpoint.update();
-        }
-    }
-
-    public boolean hasPinpoint() {
-        return pinpoint != null;
-    }
-
-    /** Robot heading in radians, counter-clockwise positive. */
-    public double getHeading() {
-        if (pinpoint != null) {
-            return pinpoint.getHeading(AngleUnit.RADIANS);
-        }
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-    }
-
-    public void resetHeading() {
-        if (pinpoint != null) {
-            pinpoint.setHeading(0, AngleUnit.RADIANS);
-        }
-        imu.resetYaw();
-    }
-
-    /** Distance driven forward since start, in inches (0 without a Pinpoint). */
-    public double getX() {
-        return pinpoint != null ? pinpoint.getPosX(DistanceUnit.INCH) : 0.0;
-    }
-
-    /** Distance strafed left since start, in inches (0 without a Pinpoint). */
-    public double getY() {
-        return pinpoint != null ? pinpoint.getPosY(DistanceUnit.INCH) : 0.0;
-    }
-
-    /** Robot-centric mecanum drive. y = forward, x = strafe right, rx = turn clockwise. */
-    public void driveRobotCentric(double y, double x, double rx) {
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
-
-        frontLeftMotor.setPower((y + x + rx) / denominator);
-        backLeftMotor.setPower((y - x + rx) / denominator);
-        frontRightMotor.setPower((y - x - rx) / denominator);
-        backRightMotor.setPower((y + x - rx) / denominator);
-    }
-
-    /** Field-centric mecanum drive using the Pinpoint (or IMU) heading. */
-    public void driveFieldCentric(double y, double x, double rx) {
-        double botHeading = getHeading();
-
-        // Rotate the movement direction counter to the bot's rotation
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-        rotX = rotX * 1.1;  // Counteract imperfect strafing
-
-        driveRobotCentric(rotY, rotX, rx);
-    }
-
-    public void stop() {
-        driveRobotCentric(0, 0, 0);
-    }
-}
