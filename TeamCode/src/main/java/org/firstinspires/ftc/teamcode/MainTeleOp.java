@@ -38,22 +38,22 @@ public class MainTeleOp extends LinearOpMode {
             double targetIntake = 0.0;
             double targetConveyor = 0.0;
 
-            if (gamepad2.right_bumper) {
-                targetIntake = 0.8;      // Spin intake inward
-                targetConveyor = 0.7;    // Move conveyor up
-            } else if (gamepad2.left_bumper) {
-                targetIntake = -0.8;     // Purge intake outward
-                targetConveyor = -0.7;   // Move conveyor backward
-            } else if (gamepad2.a) {
-                targetConveyor = 0.7;    // Stage/Feed ball independently without running intake
+            if (gamepad1.right_bumper) {
+                targetIntake = 1.0;      // Spin intake inward
+                targetConveyor = 1.0;    // Move conveyor up
+            } else if (gamepad1.left_bumper) {
+                targetIntake = -1.0;     // Purge intake outward
+                targetConveyor = -1.0;   // Move conveyor backward
+            } else if (gamepad1.a) {
+                targetConveyor = 1.0;    // Stage/Feed ball independently without running intake
             }
 
             transfer.runTransfer(targetIntake, targetConveyor);
 
             // ==================== SHOOTER CONTROLS (Gamepad 2) ====================
-            if (gamepad2.x) {
+            if (gamepad1.x) {
                 shooter.runShooter(1.0);  // Power up both flywheel motors to max speed
-            } else if (gamepad2.y) {
+            } else if (gamepad1.y) {
                 shooter.runShooter(0.0);  // Spin down both flywheels safely
             }
 
@@ -67,6 +67,48 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("Position (in)", "X: %.1f | Y: %.1f | Heading: %.1f",
                     drivetrain.getX(), drivetrain.getY(), Math.toDegrees(drivetrain.getHeading()));
             telemetry.update();
+
+            double drive2 = -gamepad2.left_stick_y;
+            double strafe2 = gamepad2.left_stick_x;
+            double turn2 = gamepad2.right_stick_x;
+
+            // Calls the robot-centric method inside your corrected Game Manual 0 drivetrain class
+            drivetrain.driveRobotCentric(drive2, strafe2, turn2);
+
+            // ==================== TRANSFER CONTROLS (Gamepad 2) ====================
+            double targetIntake2 = 0.0;
+            double targetConveyor2 = 0.0;
+
+            if (gamepad2.right_bumper) {
+                targetIntake2 = 1.0;      // Spin intake inward
+                targetConveyor2 = 1.0;    // Move conveyor up
+            } else if (gamepad2.left_bumper) {
+                targetIntake2 = -1.0;     // Purge intake outward
+                targetConveyor2 = -1.0;   // Move conveyor backward
+            } else if (gamepad2.a) {
+                targetConveyor2 = 1.0;    // Stage/Feed ball independently without running intake
+            }
+
+            transfer.runTransfer(targetIntake2, targetConveyor2);
+
+            // ==================== SHOOTER CONTROLS (Gamepad 2) ====================
+            if (gamepad2.x) {
+                shooter.runShooter(1.0);  // Power up both flywheel motors to max speed
+            } else if (gamepad2.y) {
+                shooter.runShooter(0.0);  // Spin down both flywheels safely
+            }
+
+            // ==================== TELEMETRY FEEDBACK ====================
+            telemetry.addData("Drive Active", "Y: %.2f | X: %.2f", drive2, strafe2);
+
+            // These methods pull diagnostics safely from your Shooter and Drivetrain variables
+            telemetry.addData("Shooter Status", shooter.isRunning() ? "SPINNING" : "IDLE");
+            telemetry.addData("Shooter Velocity (ticks/s)", "L: %.0f | R: %.0f",
+                    shooter.getLeftVelocity(), shooter.getRightVelocity());
+            telemetry.addData("Position (in)", "X: %.1f | Y: %.1f | Heading: %.1f",
+                    drivetrain.getX(), drivetrain.getY(), Math.toDegrees(drivetrain.getHeading()));
+            telemetry.update();
         }
     }
+
 }

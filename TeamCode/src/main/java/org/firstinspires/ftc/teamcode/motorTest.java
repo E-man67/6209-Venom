@@ -12,19 +12,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
         public void runOpMode() {
 
             // Change these names to match the names in your Robot Configuration
-            DcMotor motor0 = hardwareMap.get(DcMotor.class, "motor0");
-            DcMotor motor1 = hardwareMap.get(DcMotor.class, "motor1");
-            DcMotor motor2 = hardwareMap.get(DcMotor.class, "motor2");
-            DcMotor motor3 = hardwareMap.get(DcMotor.class, "motor3");
+            DcMotor motor0 = hardwareMap.get(DcMotor.class, "fl");
+            DcMotor motor1 = hardwareMap.get(DcMotor.class, "fr");
+            DcMotor motor2 = hardwareMap.get(DcMotor.class, "bl");
+            DcMotor motor3 = hardwareMap.get(DcMotor.class, "br");
 
             telemetry.addLine("=== MOTOR ID TESTER ===");
             telemetry.addLine("Press START to begin");
             telemetry.addLine("");
             telemetry.addLine("Controls:");
-            telemetry.addLine("A = Motor 0");
-            telemetry.addLine("B = Motor 1");
-            telemetry.addLine("X = Motor 2");
-            telemetry.addLine("Y = Motor 3");
+            telemetry.addLine("A = frontLeft");
+            telemetry.addLine("B = frontRight");
+            telemetry.addLine("X = backLeft");
+            telemetry.addLine("Y = backRight");
             telemetry.addLine("");
             telemetry.addLine("Selected motor runs while button is held.");
             telemetry.update();
@@ -43,36 +43,36 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
                 if (gamepad1.a) {
                     motor0.setPower(1.0);
-                    selected = "Motor 0";
+                    selected = "frontLeft";
                 }
 
                 if (gamepad1.b) {
                     motor1.setPower(1.0);
-                    selected = "Motor 1";
+                    selected = "frontRight";
                 }
 
                 if (gamepad1.x) {
                     motor2.setPower(1.0);
-                    selected = "Motor 2";
+                    selected = "backLeft";
                 }
 
                 if (gamepad1.y) {
                     motor3.setPower(1.0);
-                    selected = "Motor 3";
+                    selected = "backRight";
                 }
 
                 telemetry.addLine("=== MOTOR ID TESTER ===");
                 telemetry.addData("Selected", selected);
                 telemetry.addLine("");
-                telemetry.addLine("A = motor0");
-                telemetry.addLine("B = motor1");
-                telemetry.addLine("X = motor2");
-                telemetry.addLine("Y = motor3");
+                telemetry.addLine("A = frontLeft");
+                telemetry.addLine("B = frontRight");
+                telemetry.addLine("X = backLeft");
+                telemetry.addLine("Y = backRight");
                 telemetry.addLine("");
-                telemetry.addData("motor0 encoder", motor0.getCurrentPosition());
-                telemetry.addData("motor1 encoder", motor1.getCurrentPosition());
-                telemetry.addData("motor2 encoder", motor2.getCurrentPosition());
-                telemetry.addData("motor3 encoder", motor3.getCurrentPosition());
+                telemetry.addData("frontLeft encoder", motor0.getCurrentPosition());
+                telemetry.addData("frontRight encoder", motor1.getCurrentPosition());
+                telemetry.addData("backLeft encoder", motor2.getCurrentPosition());
+                telemetry.addData("backRight encoder", motor3.getCurrentPosition());
 
                 telemetry.update();
             }

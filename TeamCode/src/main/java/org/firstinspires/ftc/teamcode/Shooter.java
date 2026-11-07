@@ -21,8 +21,8 @@ public class Shooter {
         shooterRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Reverse one side because the motors face each other physically in the CAD layout
-        shooterLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        shooterRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // FLOAT behavior safely protects high-speed launcher gearboxes when spinning down
         shooterLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
