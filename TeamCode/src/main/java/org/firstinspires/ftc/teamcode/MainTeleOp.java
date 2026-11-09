@@ -60,7 +60,7 @@ public class MainTeleOp extends LinearOpMode {
             // ==================== CONTROLLER LAYOUT VISUALS FOR DRIVER HUB ====================
             telemetry.addLine("=== MECHANISM CONTROL INTERFACE LAYOUT ===");
             telemetry.addLine("Right Bumper [RB] -> RUN INTAKE (1.0) & FEED CONVEYOR (0.5)");
-            telemetry.addLine("Left Bumper  [LB] -> PURGE INTAKE (-1.0) & REVERSE CONVEYOR (-1.0)");
+            telemetry.addLine("Left Bumper  [LB] -> REVERSE INTAKE (-1.0) & REVERSE CONVEYOR (-1.0)");
             telemetry.addLine("Button       [A]  -> RUN CONVEYOR INDEPENDENTLY (0.5)");
             telemetry.addLine("Button       [X]  -> SPIN FLYWHEELS (0.7 Wall-Shot Power)");
             telemetry.addLine("Button       [Y]  -> KILL FLYWHEELS (0.0 Power)");
