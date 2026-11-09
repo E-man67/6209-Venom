@@ -76,12 +76,6 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("Position (in)", "X: %.1f | Y: %.1f | Heading: %.1f",
                     drivetrain.getX(), drivetrain.getY(), Math.toDegrees(drivetrain.getHeading()));
 
-            double drive2 = -gamepad2.left_stick_y;
-            double strafe2 = gamepad2.left_stick_x;
-            double turn2 = gamepad2.right_stick_x;
-
-            // Calls the robot-centric method inside your corrected Game Manual 0 drivetrain class
-            drivetrain.driveRobotCentric(drive2, strafe2, turn2);
 
             // ==================== TRANSFER CONTROLS (Gamepad 2) ====================
             double targetIntake2 = 0.0;
@@ -107,7 +101,6 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             // ==================== TELEMETRY FEEDBACK ====================
-            telemetry.addData("Drive 2 Active", "Y: %.2f | X: %.2f", drive2, strafe2);
 
             // These methods pull diagnostics safely from your Shooter and Drivetrain variables
             telemetry.addData("Shooter Status", shooter.isRunning() ? "SPINNING" : "IDLE");
