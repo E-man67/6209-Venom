@@ -11,6 +11,9 @@ public class MainTeleOp extends LinearOpMode {
     private Transfer transfer;
     private Shooter shooter;
 
+    double targetIntake = 0.0;
+    double targetConveyor = 0.0;
+
     @Override
     public void runOpMode() {
         // Initialize all subsystems using the active hardwareMap
@@ -36,12 +39,12 @@ public class MainTeleOp extends LinearOpMode {
             drivetrain.driveRobotCentric(drive, strafe, turn);
 
             // ==================== TRANSFER CONTROLS (Gamepad 1 Override) ====================
-            double targetIntake = 0.0;
-            double targetConveyor = 0.0;
+
 
             if (gamepad1.right_bumper || gamepad2.right_bumper) {
-                targetIntake = 1.0;      // Spin intake inward
+                transfer.runTransfer(1,0.5);      // Spin intake inward
                 targetConveyor = 0.5;    // Move conveyor up
+
             } else if (gamepad1.left_bumper || gamepad2.left_bumper) {
                 targetIntake = -1.0;     // Purge intake outward
                 targetConveyor = -1.0;   // Move conveyor backward
@@ -54,7 +57,7 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad1.x || gamepad2.x) {
                 shooter.runShooter(velocity);  // Power up both flywheel motors to max speed
             } else if (gamepad1.y || gamepad2.y) {
-                shooter.runShooter(velocity);  // Spin down both flywheels safely
+                shooter.runShooter(0.0);  // Spin down both flywheels safely
             }
 
             if (gamepad1.dpad_down || gamepad2.dpad_down){
@@ -63,6 +66,7 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up || gamepad2.dpad_up){
                 velocity += 50;
             }
+
             // ==================== CONTROLLER LAYOUT VISUALS FOR DRIVER HUB ====================
             telemetry.addLine("=== MECHANISM CONTROL INTERFACE LAYOUT ===");
             telemetry.addLine("Right Bumper [RB] -> RUN INTAKE (1.0) & FEED CONVEYOR (0.5)");
@@ -81,6 +85,9 @@ public class MainTeleOp extends LinearOpMode {
                     shooter.getLeftVelocity(), shooter.getRightVelocity());
             telemetry.addData("Position (in)", "X: %.1f | Y: %.1f | Heading: %.1f",
                     drivetrain.getX(), drivetrain.getY(), Math.toDegrees(drivetrain.getHeading()));
+
+            telemetry.update();
+
 
 
         }
