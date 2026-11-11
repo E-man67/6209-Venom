@@ -31,12 +31,11 @@ public class Shooter {
 
     /**
      * Drives both shooter flywheel motors simultaneously.
-     * @param power Target motor power (-1.0 to 1.0)
+     * param power Target motor power (-1.0 to 1.0)
      */
-    public void runShooter(double power) {
-        this.power = power;
-        shooterLeft.setPower(power);
-        shooterRight.setPower(power);
+    public void runShooter(double v) {
+        shooterLeft.setVelocity(v);
+        shooterRight.setVelocity(v);
     }
 
     public boolean isRunning() {

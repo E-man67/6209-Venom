@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class MainTeleOp extends LinearOpMode {
 
     private Drivetrain drivetrain;
+    private int velocity = 750;
     private Transfer transfer;
     private Shooter shooter;
 
@@ -51,11 +52,17 @@ public class MainTeleOp extends LinearOpMode {
 
             // ==================== SHOOTER CONTROLS (Gamepad 1 Override) ====================
             if (gamepad1.x || gamepad2.x) {
-                shooter.runShooter(0.7);  // Power up both flywheel motors to max speed
+                shooter.runShooter(velocity);  // Power up both flywheel motors to max speed
             } else if (gamepad1.y || gamepad2.y) {
-                shooter.runShooter(0.0);  // Spin down both flywheels safely
+                shooter.runShooter(velocity);  // Spin down both flywheels safely
             }
 
+            if (gamepad1.dpad_down || gamepad2.dpad_down){
+                velocity -= 50;
+            }
+            if (gamepad1.dpad_up || gamepad2.dpad_up){
+                velocity += 50;
+            }
             // ==================== CONTROLLER LAYOUT VISUALS FOR DRIVER HUB ====================
             telemetry.addLine("=== MECHANISM CONTROL INTERFACE LAYOUT ===");
             telemetry.addLine("Right Bumper [RB] -> RUN INTAKE (1.0) & FEED CONVEYOR (0.5)");
