@@ -43,11 +43,9 @@ public class MainTeleOp extends LinearOpMode {
 
             if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 transfer.runTransfer(1,0.5);      // Spin intake inward
-                targetConveyor = 0.5;    // Move conveyor up
-
+                
             } else if (gamepad1.left_bumper || gamepad2.left_bumper) {
-                targetIntake = -1.0;     // Purge intake outward
-                targetConveyor = -1.0;   // Move conveyor backward
+                transfer.runTransfer(-1,-1);// Move conveyor backward
             } else if (gamepad1.a || gamepad2.a) {
                 targetConveyor = 0.5; // Stage/Feed ball independently without running intake
             }
