@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class MainTeleOp extends LinearOpMode {
 
     private Drivetrain drivetrain;
-    private int velocity = 750;
+    private int velocity = 675;
     private Transfer transfer;
     private Shooter shooter;
 
@@ -47,10 +47,10 @@ public class MainTeleOp extends LinearOpMode {
             } else if (gamepad1.left_bumper || gamepad2.left_bumper) {
                 transfer.runTransfer(-1,-1);// Move conveyor backward
             } else if (gamepad1.a || gamepad2.a) {
-                targetConveyor = 0.5; // Stage/Feed ball independently without running intake
+                transfer.runTransfer(-0.5,-0.5); // Stage/Feed ball independently without running intake
             }
             else{
-                transfer.runTransfer(0.0,0);
+                transfer.runTransfer(0,0);
             }
 
 
@@ -61,11 +61,11 @@ public class MainTeleOp extends LinearOpMode {
                 shooter.runShooter(0.0);  // Spin down both flywheels safely
             }
 
-            if (gamepad1.dpad_down || gamepad2.dpad_down){
-                velocity -= 50;
+            if (gamepad1.dpadDownWasPressed() || gamepad2.dpadDownWasPressed()){
+                velocity -= 75;
             }
-            if (gamepad1.dpad_up || gamepad2.dpad_up){
-                velocity += 50;
+            if (gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed()){
+                velocity += 75;
             }
 
             // ==================== CONTROLLER LAYOUT VISUALS FOR DRIVER HUB ====================
@@ -86,6 +86,7 @@ public class MainTeleOp extends LinearOpMode {
                     shooter.getLeftVelocity(), shooter.getRightVelocity());
             telemetry.addData("Position (in)", "X: %.1f | Y: %.1f | Heading: %.1f",
                     drivetrain.getX(), drivetrain.getY(), Math.toDegrees(drivetrain.getHeading()));
+            telemetry.addData("velocity", velocity);
 
             telemetry.update();
 
