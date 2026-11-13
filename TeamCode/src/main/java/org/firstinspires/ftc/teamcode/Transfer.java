@@ -24,5 +24,6 @@ public class Transfer {
     public void runTransfer(double intakePower, double conveyorPower) {
         intakeMotor.setPower(intakePower);
         conveyorMotor.setPower(conveyorPower);
+
     }
 }

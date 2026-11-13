@@ -49,6 +49,9 @@ public class MainTeleOp extends LinearOpMode {
             } else if (gamepad1.a || gamepad2.a) {
                 targetConveyor = 0.5; // Stage/Feed ball independently without running intake
             }
+            else{
+                transfer.runTransfer(0.0,0);
+            }
 
 
             // ==================== SHOOTER CONTROLS (Gamepad 1 Override) ====================
