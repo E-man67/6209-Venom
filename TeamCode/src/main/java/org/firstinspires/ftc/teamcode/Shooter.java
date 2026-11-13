@@ -34,7 +34,7 @@ public class Shooter {
      * param power Target motor power (-1.0 to 1.0)
      */
     public void runShooter(double v) {
-        shooterLeft.setVelocity(v*1.25);
+        shooterLeft.setVelocity(v*1.4);
         shooterRight.setVelocity(v);
     }
 
