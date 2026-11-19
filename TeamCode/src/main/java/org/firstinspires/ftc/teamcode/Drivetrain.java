@@ -106,7 +106,19 @@ public class Drivetrain {
     }
 
     /** Robot-centric mecanum drive calculations loop. */
+    /** Ignores tiny resting joystick values so the robot doesn't creep when idle. */
+    private double applyDeadband(double value, double deadband) {
+        if (Math.abs(value) < deadband) {
+            return 0.0;
+        }
+        return Math.signum(value) * ((Math.abs(value) - deadband) / (1.0 - deadband));
+    }
+
     public void driveRobotCentric(double y, double x, double rx) {
+        y = applyDeadband(y, 0.05);
+        x = applyDeadband(x, 0.05);
+        rx = applyDeadband(rx, 0.05);
+
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
 
         frontLeftMotor.setPower((y + x + rx) / denominator);
@@ -115,16 +127,18 @@ public class Drivetrain {
         backRightMotor.setPower((y + x - rx) / denominator);
     }
 
-    /** Field-centric mecanum drive using the Pinpoint (or IMU) heading calculations. */
     public void driveFieldCentric(double y, double x, double rx) {
+        y = applyDeadband(y, 0.05);
+        x = applyDeadband(x, 0.05);
+        rx = applyDeadband(rx, 0.05);
+
         double botHeading = getHeading();
 
         // Rotate the movement direction counter to the bot's rotation vectors
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-        rotX = rotX * 1.1;  // Counteract imperfect friction tracking during strafing
-
         driveRobotCentric(rotY, rotX, rx);
     }
+
 }

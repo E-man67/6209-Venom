@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class MainTeleOp extends LinearOpMode {
 
     private Drivetrain drivetrain;
-    private int velocity = 675;
+    private int velocity = 600;
     private Transfer transfer;
     private Shooter shooter;
 
