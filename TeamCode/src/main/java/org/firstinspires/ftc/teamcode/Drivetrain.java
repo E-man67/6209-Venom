@@ -52,8 +52,8 @@ public class Drivetrain {
         // Initialize background sensors for orientation mapping
         imu = hwMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)));
+                RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
 
         // Safe setup loop for the goBILDA Pinpoint device
         pinpoint = hwMap.tryGet(GoBildaPinpointDriver.class, "pinpoint");
